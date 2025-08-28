@@ -16,9 +16,7 @@ namespace UDPServer
             this.m_EndPoint = ipEndPoint;
             this.m_deltaTime=1f/FrameRate;
             m_Session=new UDPServerSession();
-            var packet = PacketFactoryBase.Instance.GetPacket(HeartbeatID);
             byte[] Heatbeat=ToPacket(PacketFactoryBase.Instance.GetPacket(HeartbeatID));
-            
             m_Session.Init(60, (ReceiveData)OnReceiveData, (ReceiveData)OnRegisterClient, (ReceiveData)OnDropClient, Heatbeat,HeartbeatCheckTime,HeartbeatDropTime,ipEndPoint);
             return OnInit();
         }
