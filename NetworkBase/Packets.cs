@@ -84,6 +84,7 @@ namespace NetworkBase
     
     public class StateSyncPacket : INetPacket
     {
+        public DateTime TimeStamp;
         public List<PlayerState> Players;
         public byte[] ToBytes()
         {
@@ -91,10 +92,11 @@ namespace NetworkBase
             {
                 return null;
             }
-            byte[] data=new byte[Players.Count*16];
+            byte[] data=new byte[Players.Count*16+8];
+            Array.Copy(BitConverter.GetBytes(TimeStamp.Ticks),0,data,0,8);
             for (int i = 0; i < Players.Count; i++)
             {
-                Array.Copy(Players[i].ToBytes(),0,data,i*16,16);
+                Array.Copy(Players[i].ToBytes(),0,data,8+i*16,16);
             }
 
             return data;
@@ -102,20 +104,21 @@ namespace NetworkBase
 
         public void FromBytes(byte[] data)
         {
-            if (data.Length % 16 != 0)
+            if ((data.Length-8) % 16 != 0)
             {
                 return;
             }
             Players=new List<PlayerState>();
+            TimeStamp=new DateTime(BitConverter.ToInt64(data, 0));
             try
             {
-                for (int i = 0; i < data.Length / 16; i++)
+                for (int i = 0; i < (data.Length-8) / 16; i++)
                 {
                     PlayerState state=new PlayerState();
-                    state.PlayerId=BitConverter.ToInt32(data,i*16);
-                    state.m_X=BitConverter.ToInt32(data,i*16+4);
-                    state.m_Y=BitConverter.ToInt32(data,i*16+8);
-                    state.m_Z=BitConverter.ToInt32(data,i*16+12);
+                    state.PlayerId=BitConverter.ToInt32(data,8+i*16);
+                    state.m_X=BitConverter.ToInt32(data,8+i*16+4);
+                    state.m_Y=BitConverter.ToInt32(data,8+i*16+8);
+                    state.m_Z=BitConverter.ToInt32(data,8+i*16+12);
                     Players.Add(state);
                 }
             }
@@ -152,5 +155,97 @@ namespace NetworkBase
             m_Z = BitConverter.ToInt32(data, 8);
         }
     }
-    
+    public class InputSyncPacket : INetPacket
+    {
+        public List<PlayerInputPacket> PlayersInput;
+        public byte[] ToBytes()
+        {
+            if (PlayersInput == null)
+            {
+                return new byte[0];
+            }
+            byte[] data=new byte[PlayersInput.Count*12];
+            for (int i = 0; i < PlayersInput.Count; i++)
+            {
+                Array.Copy(PlayersInput[i].ToBytes(),0,data,i*12,12);
+            }
+            return data;
+        }
+
+        public void FromBytes(byte[] data)
+        {
+            if ((data.Length) % 12 != 0)
+            {
+                return;
+            }
+            PlayersInput = new List<PlayerInputPacket>();
+            try
+            {
+                var buffer = new byte[12]; 
+                for (int i = 0; i < (data.Length) / 12; i++)
+                {
+                    var Input=new PlayerInputPacket();
+                    Array.Copy(data,i*12,buffer,0,12);
+                    Input.FromBytes(buffer);
+                    PlayersInput.Add(Input);
+                }
+            }
+            catch (Exception e)
+            {
+                Logger.LogToTerminal(e.Message);
+            }
+        }
+    }
+    public class DropClientPacket : INetPacket
+    {
+       
+        public List<int> idList;
+        public byte[] ToBytes()
+        {
+            byte[] data = new byte[idList.Count * 4];
+            for (int i = 0; i < idList.Count; i++)
+            {
+                Array.Copy(BitConverter.GetBytes(idList[i]),0,data,i*4,4);
+            }
+            return data;
+        }
+        public void FromBytes(byte[] data)
+        {
+            if (data.Length % 4 != 0)
+            {
+                return;
+            }
+            idList=new List<int>();
+            for (int i = 0; i < data.Length / 4; i++)
+            {
+                idList.Add(BitConverter.ToInt32(data,i*4));
+            }
+        }
+    }
+    public class RegisterNewClientPacket : INetPacket
+    {
+       
+        public List<int> idList;
+        public byte[] ToBytes()
+        {
+            byte[] data = new byte[idList.Count * 4];
+            for (int i = 0; i < idList.Count; i++)
+            {
+                Array.Copy(BitConverter.GetBytes(idList[i]),0,data,i*4,4);
+            }
+            return data;
+        }
+        public void FromBytes(byte[] data)
+        {
+            if (data.Length % 4 != 0)
+            {
+                return;
+            }
+            idList=new List<int>();
+            for (int i = 0; i < data.Length / 4; i++)
+            {
+                idList.Add(BitConverter.ToInt32(data,i*4));
+            }
+        }
+    }
 }

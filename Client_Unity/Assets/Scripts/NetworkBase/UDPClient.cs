@@ -1,6 +1,9 @@
 using System;
 using NetworkBase;
 using System.Collections.Generic;
+using UnityEngine;
+using Logger = NetworkBase.Logger;
+
 namespace UDPClient
 {
     public abstract class UDPClient : ClientBase
@@ -47,7 +50,6 @@ namespace UDPClient
             {
                 Logger.LogToTerminal(e.Message);
             }
-            
         }
 
         protected abstract void OnReceive();
@@ -77,7 +79,6 @@ namespace UDPClient
                         {
                             dataQueue.Enqueue(empty);
                         }
-
                         newPacket = true;
                         continue;
                     }

@@ -51,10 +51,13 @@
     <Compile Include="Assets/Scripts/NetworkBase/Logger.cs" />
     <Compile Include="Assets/Scripts/NetworkBase/NetworkSessionBase.cs" />
     <Compile Include="Assets/Scripts/NetworkBase/UDPClient.cs" />
+    <Compile Include="Assets/Scripts/NetworkBase/UDPClient_InputSyncDemo.cs" />
     <Compile Include="Assets/ParrelSync/Examples/CustomArgumentExample.cs" />
+    <Compile Include="Assets/Scripts/InputSync/InputSyncManager.cs" />
     <Compile Include="Assets/Scripts/NetworkBase/Packets.cs" />
-    <Compile Include="Assets/Scripts/NetworkBase/UDPClient_Demo.cs" />
     <Compile Include="Assets/Scripts/NetworkBase/INetPacket.cs" />
+    <Compile Include="Assets/Scripts/NetworkBase/UDPClient_StateSyncDemo.cs" />
+    <Compile Include="Assets/Scripts/NetworkBase/InputSynchronizationFactory.cs" />
     <Compile Include="Assets/Scripts/NetworkBase/PacketFactoryBase.cs" />
     <Compile Include="Assets/Scripts/StateSync/StateSyncManager.cs" />
     <None Include="Assets/ParrelSync/VERSION.txt" />

@@ -42,6 +42,7 @@
     <ItemGroup>
         <Compile Include="AppBase.cs" />
         <Compile Include="ClientBase.cs" />
+        <Compile Include="InputSynchronizationFactory.cs" />
         <Compile Include="PacketFactoryBase.cs" />
         <Compile Include="StateSynchronizationFactory.cs" />
         <Compile Include="INetPacket.cs" />
