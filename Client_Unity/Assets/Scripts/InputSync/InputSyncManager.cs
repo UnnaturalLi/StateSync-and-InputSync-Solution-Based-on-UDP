@@ -7,6 +7,11 @@ using UnityEngine;
 using NetworkBase;
 using UDPClient;
 
+public class PlayerInfoInputSync
+{
+    public Vector3 target;
+    public Transform transform;
+}
 public class InputSyncManager : MonoBehaviour
 {
     public UDPClient_InputSyncDemo m_UDPClient_InputSyncDemo;
@@ -16,7 +21,7 @@ public class InputSyncManager : MonoBehaviour
     public Queue<InputSyncPacket> SyncDataQueue;
     public Queue<StateSyncPacket> StateDataQueue;
     public Queue<DropClientPacket> DropClientQueue;
-    public Dictionary<int,Transform> Players;
+    public Dictionary<int,PlayerInfoInputSync> Players;
     public GameObject LocalPlayerPrefab;
     public int LocalX;
     public int LocalY;
@@ -37,7 +42,7 @@ public class InputSyncManager : MonoBehaviour
         PlayerID = -1;
         m_UDPClient_InputSyncDemo = new UDPClient_InputSyncDemo(this);
         StateDataQueue = new Queue<StateSyncPacket>();
-        Players = new Dictionary<int, Transform>();
+        Players = new Dictionary<int, PlayerInfoInputSync>();
         NewPacket = false;
         SyncDataQueue=new Queue<InputSyncPacket>();
         DropClientQueue=new Queue<DropClientPacket>();
@@ -68,8 +73,24 @@ public class InputSyncManager : MonoBehaviour
             UpdateOtherPlayers();
         }
         UpdateLocalPlayer();
+        UpdateOtherPlayersRender();
     }
 
+    public void UpdateOtherPlayersRender()
+    {
+        foreach (var pair in Players)
+        {
+            if (Vector3.Distance(pair.Value.transform.position, pair.Value.target )< 0.01f)
+            {
+                pair.Value.transform.position = pair.Value.target;
+            }
+            else
+            {
+                pair.Value.transform.position =
+                    Vector3.Lerp(pair.Value.transform.position, pair.Value.target, Time.fixedDeltaTime * 10);
+            }
+        }
+    }
     public void UpdateOtherPlayers()
     {
         while (StateDataQueue.Count > 0)
@@ -79,7 +100,10 @@ public class InputSyncManager : MonoBehaviour
             {
                 if (!Players.ContainsKey(player.PlayerId)&& player.PlayerId!=PlayerID)
                 {
-                    Players[player.PlayerId] = Instantiate(LocalPlayerPrefab,new Vector3(player.x,player.y,player.z),Quaternion.identity).transform;
+                    PlayerInfoInputSync playerInfo = new PlayerInfoInputSync();
+                    playerInfo.transform = Instantiate(LocalPlayerPrefab,new Vector3(player.x,player.y,player.z),Quaternion.identity).transform;
+                    playerInfo.target = new Vector3(player.x, player.y, player.z);
+                    Players.Add(player.PlayerId,playerInfo);
                 }
             }
         }
@@ -94,9 +118,9 @@ public class InputSyncManager : MonoBehaviour
                 }
                 if (!Players.ContainsKey(InputPacket.PlayerId))
                 {
-                    Players[InputPacket.PlayerId] = Instantiate(LocalPlayerPrefab,new Vector3(0,0,0),Quaternion.identity).transform;
+                    continue;
                 }
-                Players[InputPacket.PlayerId].position += new Vector3(InputPacket.m_X*0.001f, 0,InputPacket.m_Z*0.001f);
+                Players[InputPacket.PlayerId].target += new Vector3(InputPacket.m_X*0.001f, 0,InputPacket.m_Z*0.001f);
             }
         }
         while (DropClientQueue.Count > 0)
@@ -133,7 +157,7 @@ public class InputSyncManager : MonoBehaviour
     }
     public void RemovePlayer(int id)
     {
-        Destroy(Players[id].gameObject);
+        Destroy(Players[id].transform.gameObject);
         Players.Remove(id);
     }
     public void SetPlayerID(int id)
