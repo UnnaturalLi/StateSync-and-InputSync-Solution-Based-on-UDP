@@ -61,6 +61,7 @@
     <Compile Include="Assets/Scripts/NetworkBase/PacketFactoryBase.cs" />
     <Compile Include="Assets/Scripts/StateSync/StateSyncManager.cs" />
     <None Include="Assets/ParrelSync/VERSION.txt" />
+    <None Include="Assets/Scripts/Material/GroundGrid.shader" />
     <Reference Include="UnityEngine">
       <HintPath>/Applications/Unity/Unity.app/Contents/Managed/UnityEngine/UnityEngine.dll</HintPath>
     </Reference>
