@@ -80,6 +80,5 @@ The project automatically generates an `ipConfig.txt` file in the build direct
     - Open the `InputSyncScene` to test input broadcasting.
 3. **Controls:** Use `WASD` or Arrow Keys to move the player. Observe the `ServerPlayer` (Ghost) vs `LocalPlayer` to see prediction in action.
 
-## 📜 License
-
-This project is licensed under the MIT License - see the [LICENSE](https://www.google.com/search?q=LICENSE) file for details.
+## 📜 License)
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
